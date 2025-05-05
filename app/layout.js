@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: 'E-commerce App',
-  description: 'Built with React + Next.js + Bootstrap',
+  description: 'Built with Next.js and React',
 };
 
 export default function RootLayout({ children }) {
@@ -24,8 +24,11 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <Navbar />
-        <main className="container mt-4">{children}</main>
+        <main className="container mt-4">
+          {children}
+        </main>
       </body>
     </html>
   );
 }
+
