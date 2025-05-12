@@ -1,0 +1,146 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Red Sneakers",
+      "description": "Comfortable and stylish red sneakers.",
+      "price": 199,
+      "image": "https://via.placeholder.com/200x150?text=Red+Sneakers",
+      "category": "Footwear"
+    },
+    {
+      "id": 2,
+      "name": "Blue Backpack",
+      "description": "Durable backpack with multiple compartments.",
+      "price": 149,
+      "image": "https://via.placeholder.com/200x150?text=Blue+Backpack",
+      "category": "Accessories"
+    },
+    {
+      "id": 3,
+      "name": "Smart Watch",
+      "description": "Keep track of time and fitness goals.",
+      "price": 249,
+      "image": "https://via.placeholder.com/200x150?text=Smart+Watch",
+      "category": "Electronics"
+    },
+    {
+      "id": 4,
+      "name": "Wireless Headphones",
+      "description": "Premium sound quality with noise cancellation.",
+      "price": 179,
+      "image": "https://via.placeholder.com/200x150?text=Wireless+Headphones",
+      "category": "Electronics"
+    },
+    {
+      "id": 5,
+      "name": "Denim Jacket",
+      "description": "Classic denim jacket for all seasons.",
+      "price": 89,
+      "image": "https://via.placeholder.com/200x150?text=Denim+Jacket",
+      "category": "Clothing"
+    },
+    {
+      "id": 6,
+      "name": "Portable Power Bank",
+      "description": "10000mAh battery capacity for on-the-go charging.",
+      "price": 59,
+      "image": "https://via.placeholder.com/200x150?text=Power+Bank",
+      "category": "Electronics"
+    }
+  ],
+  "campaigns": [
+    {
+      "id": 1,
+      "title": "Summer Sale",
+      "description": "Get up to 50% off on summer essentials!",
+      "image": "https://via.placeholder.com/800x400?text=Summer+Sale",
+      "startDate": "2023-06-01",
+      "endDate": "2023-08-31"
+    },
+    {
+      "id": 2,
+      "title": "New Arrivals",
+      "description": "Check out our latest products!",
+      "image": "https://via.placeholder.com/800x400?text=New+Arrivals",
+      "startDate": "2023-05-15",
+      "endDate": "2023-07-15"
+    },
+    {
+      "id": 3,
+      "title": "Flash Sale",
+      "description": "24-hour deals on top electronics!",
+      "image": "https://via.placeholder.com/800x400?text=Flash+Sale",
+      "startDate": "2023-06-15",
+      "endDate": "2023-06-16"
+    }
+  ],
+  "cart": [
+    {
+      "productId": 1,
+      "name": "Red Sneakers",
+      "price": 199,
+      "image": "https://via.placeholder.com/200x150?text=Red+Sneakers",
+      "quantity": 9,
+      "notes": "",
+      "id": 1
+    },
+    {
+      "productId": 2,
+      "name": "Blue Backpack",
+      "price": 149,
+      "image": "https://via.placeholder.com/200x150?text=Blue+Backpack",
+      "quantity": 5,
+      "notes": "",
+      "id": 2
+    },
+    {
+      "productId": 4,
+      "name": "Wireless Headphones",
+      "price": 179,
+      "image": "https://via.placeholder.com/200x150?text=Wireless+Headphones",
+      "quantity": 1,
+      "notes": "",
+      "id": 3
+    },
+    {
+      "productId": 5,
+      "name": "Denim Jacket",
+      "price": 89,
+      "image": "https://via.placeholder.com/200x150?text=Denim+Jacket",
+      "quantity": 3,
+      "notes": "",
+      "id": 4
+    }
+  ],
+  "reviews": [
+    {
+      "id": 1,
+      "productId": 1,
+      "rating": 4,
+      "comment": "Great shoes, very comfortable!",
+      "author": "John D."
+    },
+    {
+      "id": 2,
+      "productId": 1,
+      "rating": 5,
+      "comment": "Love the color and fit!",
+      "author": "Sarah M."
+    },
+    {
+      "id": 3,
+      "productId": 2,
+      "rating": 4,
+      "comment": "Good backpack with lots of storage.",
+      "author": "Mike T."
+    },
+    {
+      "productId": 2,
+      "rating": 5,
+      "comment": "hshs",
+      "author": "ASfat",
+      "id": 4
+    }
+  ]
+}

@@ -1,8 +1,17 @@
 'use client';
 import Link from 'next/link';
 import { Button, Card } from 'react-bootstrap';
+import { useCart } from '../context/CartContext';
 
 export default function ProductCard({ product }) {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    console.log('Adding to cart from ProductCard:', product);
+    addToCart(product, 1);
+    alert('Product added to cart!');
+  };
+
   return (
     <Card className="mb-4" style={{ width: '18rem' }}>
       <Card.Img variant="top" src={product.image} />
@@ -13,7 +22,7 @@ export default function ProductCard({ product }) {
         <Link href={`/product/${product.id}`}>
           <Button variant="primary" className="me-2">View</Button>
         </Link>
-        <Button variant="success">Add to Cart</Button>
+        <Button variant="success" onClick={handleAddToCart}>Add to Cart</Button>
       </Card.Body>
     </Card>
   );
