@@ -1,38 +1,42 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Button, Form, Card } from 'react-bootstrap';
 import { useCart } from '../../context/CartContext';
 import axios from 'axios';
-import { use } from 'react';
 
 export default function ProductDetail({ params }) {
-  // Unwrap params using React.use - Next.js 15 requirement
-  const unwrappedParams = use(params);
-  const productId = unwrappedParams.id;
-  
+  const productId = params.id;
+  const { addToCart } = useCart();
+
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [newReview, setNewReview] = useState({ rating: 5, comment: '', author: '' });
-  const { addToCart } = useCart();
+  const [imgError, setImgError] = useState(false);
 
+  const [newReview, setNewReview] = useState({
+    rating: 5,
+    comment: '',
+    author: ''
+  });
+
+  // Fetch product & reviews
   useEffect(() => {
     const fetchProductAndReviews = async () => {
       try {
-        // Fetch product
-        const productResponse = await axios.get(`http://localhost:5000/products/${productId}`);
-        setProduct(productResponse.data);
-        
-        // Fetch reviews
-        const reviewsResponse = await axios.get(`http://localhost:5000/reviews?productId=${productId}`);
-        setReviews(reviewsResponse.data);
+        const [productRes, reviewsRes] = await Promise.all([
+          axios.get(`http://localhost:3000/products/${productId}`),
+          axios.get(`http://localhost:3000/reviews?productId=${productId}`)
+        ]);
+
+        setProduct(productRes.data);
+        setReviews(reviewsRes.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching product or reviews:', error);
         // Fallback to local data
-        import('../../data/products').then(module => {
-          const productData = module.default.find(p => p.id === parseInt(productId));
-          setProduct(productData);
-        });
+        const local = await import('../../data/products');
+        const fallbackProduct = local.default.find(p => p.id === parseInt(productId));
+        setProduct(fallbackProduct);
       } finally {
         setLoading(false);
       }
@@ -42,11 +46,9 @@ export default function ProductDetail({ params }) {
   }, [productId]);
 
   const handleAddToCart = () => {
-    if (product) {
-      console.log('Adding to cart:', product);
-      addToCart(product, 1);
-      alert('Product added to cart!');
-    }
+    if (!product) return;
+    addToCart(product, 1);
+    console.log(`✔️ Added "${product.name}" to cart`);
   };
 
   const handleReviewChange = (e) => {
@@ -56,9 +58,9 @@ export default function ProductDetail({ params }) {
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
-    
-    if (!newReview.comment || !newReview.author) {
-      alert('Please fill out all fields');
+
+    if (!newReview.author || !newReview.comment) {
+      alert('Please fill in your name and review.');
       return;
     }
 
@@ -68,52 +70,45 @@ export default function ProductDetail({ params }) {
     };
 
     try {
-      const response = await axios.post('http://localhost:5000/reviews', reviewData);
-      setReviews([...reviews, response.data]);
-      setNewReview({ rating: 5, comment: '', author: '' });
-      alert('Review added successfully!');
-    } catch (error) {
-      console.error('Error adding review:', error);
-      // Fallback to local state if API fails
-      const fakeId = Math.floor(Math.random() * 1000) + reviews.length;
-      setReviews([...reviews, { ...reviewData, id: fakeId }]);
-      setNewReview({ rating: 5, comment: '', author: '' });
-      alert('Review added to local state (API unavailable)');
+      const res = await axios.post('http://localhost:3000/reviews', reviewData);
+      setReviews(prev => [...prev, res.data]);
+    } catch (err) {
+      console.error('Failed to post review:', err);
+      // Local fallback
+      const fallbackReview = { ...reviewData, id: Date.now() };
+      setReviews(prev => [...prev, fallbackReview]);
     }
+
+    // Reset form
+    setNewReview({ rating: 5, comment: '', author: '' });
   };
 
   const getAverageRating = () => {
     if (reviews.length === 0) return 0;
-    const sum = reviews.reduce((total, review) => total + review.rating, 0);
-    return (sum / reviews.length).toFixed(1);
+    const total = reviews.reduce((sum, r) => sum + r.rating, 0);
+    return (total / reviews.length).toFixed(1);
   };
 
-  // Render stars
   const renderStars = (rating) => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <span key={i} className="fs-4">
-          {i <= rating ? '★' : '☆'}
-        </span>
-      );
-    }
-    return stars;
+    return [...Array(5)].map((_, i) => (
+      <span key={i} className="fs-4">{i < rating ? '★' : '☆'}</span>
+    ));
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!product) {
-    return <h2>Product not found.</h2>;
-  }
+  if (loading) return <p>Loading product details...</p>;
+  if (!product) return <h2>Product not found.</h2>;
 
   return (
     <Container>
+      {/* Product Info */}
       <Row className="mb-5">
         <Col md={6}>
-          <img src={product.image} alt={product.name} className="img-fluid mb-3" />
+          <img
+            src={imgError ? 'https://via.placeholder.com/400x300?text=Image+Not+Available' : product.image}
+            onError={() => setImgError(true)}
+            alt={product.name}
+            className="img-fluid mb-3"
+          />
         </Col>
         <Col md={6}>
           <h1>{product.name}</h1>
@@ -123,37 +118,32 @@ export default function ProductDetail({ params }) {
           </div>
           <p>{product.description}</p>
           <h4 className="mb-3">${product.price}</h4>
-          <Button variant="success" onClick={handleAddToCart}>
-            Add to Cart
-          </Button>
+          <Button variant="success" onClick={handleAddToCart}>Add to Cart</Button>
         </Col>
       </Row>
 
+      {/* Customer Reviews */}
       <Row className="mb-5">
         <Col>
           <h3>Customer Reviews</h3>
           <hr />
-          
-          {reviews.length > 0 ? (
+          {reviews.length ? (
             reviews.map(review => (
               <Card key={review.id} className="mb-3">
                 <Card.Body>
-                  <div className="d-flex justify-content-between">
-                    <div>
-                      <Card.Title>{review.author}</Card.Title>
-                      <div>{renderStars(review.rating)}</div>
-                    </div>
-                  </div>
+                  <Card.Title>{review.author}</Card.Title>
+                  <div>{renderStars(review.rating)}</div>
                   <Card.Text>{review.comment}</Card.Text>
                 </Card.Body>
               </Card>
             ))
           ) : (
-            <p>No reviews yet. Be the first to review this product!</p>
+            <p>No reviews yet. Be the first to write one!</p>
           )}
         </Col>
       </Row>
 
+      {/* Review Form */}
       <Row className="mb-5">
         <Col>
           <h3>Write a Review</h3>
@@ -168,7 +158,7 @@ export default function ProductDetail({ params }) {
                 required
               />
             </Form.Group>
-            
+
             <Form.Group className="mb-3">
               <Form.Label>Rating</Form.Label>
               <Form.Select
@@ -183,7 +173,7 @@ export default function ProductDetail({ params }) {
                 <option value="1">1 Star - Poor</option>
               </Form.Select>
             </Form.Group>
-            
+
             <Form.Group className="mb-3">
               <Form.Label>Your Review</Form.Label>
               <Form.Control
@@ -195,17 +185,11 @@ export default function ProductDetail({ params }) {
                 required
               />
             </Form.Group>
-            
-            <Button variant="primary" type="submit">
-              Submit Review
-            </Button>
+
+            <Button variant="primary" type="submit">Submit Review</Button>
           </Form>
         </Col>
       </Row>
     </Container>
   );
 }
-
-
-
-  

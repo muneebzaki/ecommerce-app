@@ -16,8 +16,8 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const productsResponse = await axios.get('http://localhost:5000/products');
-        const campaignsResponse = await axios.get('http://localhost:5000/campaigns');
+        const productsResponse = await axios.get('http://localhost:3000/products');
+        const campaignsResponse = await axios.get('http://localhost:3000/campaigns');
         setProducts(productsResponse.data);
         setCampaigns(campaignsResponse.data);
       } catch (error) {

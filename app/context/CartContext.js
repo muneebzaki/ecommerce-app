@@ -1,213 +1,189 @@
 'use client';
+
 import { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 
 const CartContext = createContext();
 
+// Helper function to match cart item ID
+const matchId = (item, id) => item.id === id || item.productId === id;
+
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch cart from API
+  // 1️⃣ Load cart from API or localStorage on first render
   useEffect(() => {
-    const getCart = async () => {
+    const loadCart = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/cart');
+        const response = await axios.get('http://localhost:3000/cart');
         setCart(response.data);
       } catch (error) {
-        console.error('Error fetching cart:', error);
-        // Fallback to localStorage if API fails
-        if (typeof window !== 'undefined') {
-          const localCart = localStorage.getItem('cart');
-          if (localCart) {
-            setCart(JSON.parse(localCart));
-          }
-        }
+        console.error('API cart fetch failed. Falling back to localStorage.', error);
+        const local = localStorage.getItem('cart');
+        if (local) setCart(JSON.parse(local));
       } finally {
         setIsLoading(false);
       }
     };
 
-    getCart();
+    loadCart();
   }, []);
 
-  // Save cart to localStorage whenever it changes
+  // 2️⃣ Save cart to localStorage + optionally sync with API
   useEffect(() => {
-    if (!isLoading && typeof window !== 'undefined') {
+    if (!isLoading) {
       localStorage.setItem('cart', JSON.stringify(cart));
-      // Attempt to sync with API
-      if (cart.length > 0) {
-        syncCartWithApi();
-      }
+      syncCart(); // Sync with backend when cart updates
     }
   }, [cart, isLoading]);
 
-  // Sync cart with API
-  const syncCartWithApi = async () => {
+  // 3️⃣ Sync cart with json-server
+  const syncCart = async () => {
     try {
-      // For simplicity, we'll just get each cart item and update or add it
       for (const item of cart) {
         if (item.id) {
-          await axios.put(`http://localhost:5000/cart/${item.id}`, item);
+          await axios.put(`http://localhost:3000/cart/${item.id}`, item);
         } else {
-          const response = await axios.post('http://localhost:5000/cart', item);
-          // Update local cart item with ID from server
-          setCart(prevCart => 
-            prevCart.map(cartItem => 
-              cartItem === item ? { ...response.data } : cartItem
-            )
+          const response = await axios.post(`http://localhost:3000/cart`, item);
+          setCart(prev =>
+            prev.map(i => (i === item ? response.data : i))
           );
         }
       }
-    } catch (error) {
-      console.error('Error syncing cart with API:', error);
+    } catch (err) {
+      console.error('Error syncing cart to API:', err);
     }
   };
 
-  // Add item to cart
+  // 4️⃣ Add to cart
   const addToCart = async (product, quantity = 1, notes = '') => {
-    console.log('CartContext addToCart called with:', product, quantity);
-    
-    if (!product || !product.id) {
-      console.error('Invalid product provided to addToCart');
-      return;
-    }
+    const existingItem = cart.find(item => item.productId === Number(product.id));
 
-    const existingItem = cart.find(item => item.productId === product.id);
-    
     if (existingItem) {
-      // Update quantity if item already exists
-      console.log('Updating existing item in cart');
-      const updatedCart = cart.map(item => 
-        item.productId === product.id 
-          ? { ...item, quantity: (item.quantity || 1) + quantity } 
+      const updatedCart = cart.map(item =>
+        matchId(item, product.id)
+          ? { ...item, quantity: item.quantity + quantity }
           : item
       );
       setCart(updatedCart);
     } else {
-      // Add new item
-      console.log('Adding new item to cart');
       const newItem = {
-        productId: product.id,
+        productId: Number(product.id),
         name: product.name,
         price: product.price,
         image: product.image,
         quantity,
-        notes
+        notes,
       };
 
       try {
         const response = await axios.post('http://localhost:5000/cart', newItem);
-        console.log('API response:', response.data);
-        setCart(prevCart => [...prevCart, response.data]);
-      } catch (error) {
-        console.error('Error adding to cart:', error);
-        // Fallback to local state if API fails
-        console.log('Falling back to local state for cart');
-        setCart(prevCart => [...prevCart, newItem]);
+        setCart(prev => [...prev, response.data]);
+      } catch (err) {
+        console.error('Error adding to API cart. Adding locally.', err);
+        setCart(prev => [...prev, newItem]);
       }
     }
   };
 
-  // Update item quantity
+  // 5️⃣ Update quantity
   const updateQuantity = async (itemId, quantity) => {
     if (quantity <= 0) {
       removeFromCart(itemId);
       return;
     }
-    
-    const updatedCart = cart.map(item => 
-      item.id === itemId || item.productId === itemId
-        ? { ...item, quantity } 
-        : item
+
+    const updatedCart = cart.map(item =>
+      matchId(item, itemId) ? { ...item, quantity } : item
     );
-    
     setCart(updatedCart);
-    
+
     try {
-      const item = cart.find(i => i.id === itemId || i.productId === itemId);
-      if (item && item.id) {
-        await axios.put(`http://localhost:5000/cart/${item.id}`, { ...item, quantity });
+      const item = cart.find(i => matchId(i, itemId));
+      if (item?.id) {
+        await axios.put(`http://localhost:3000/cart/${item.id}`, {
+          ...item,
+          quantity,
+        });
       }
-    } catch (error) {
-      console.error('Error updating cart item:', error);
+    } catch (err) {
+      console.error('Failed to update quantity in API:', err);
     }
   };
 
-  // Add notes to item
+  // 6️⃣ Add special notes
   const addNotes = async (itemId, notes) => {
-    const updatedCart = cart.map(item => 
-      item.id === itemId || item.productId === itemId
-        ? { ...item, notes } 
-        : item
+    const updatedCart = cart.map(item =>
+      matchId(item, itemId) ? { ...item, notes } : item
     );
-    
     setCart(updatedCart);
-    
+
     try {
-      const item = cart.find(i => i.id === itemId || i.productId === itemId);
-      if (item && item.id) {
-        await axios.put(`http://localhost:5000/cart/${item.id}`, { ...item, notes });
+      const item = cart.find(i => matchId(i, itemId));
+      if (item?.id) {
+        await axios.put(`http://localhost:3000/cart/${item.id}`, {
+          ...item,
+          notes,
+        });
       }
-    } catch (error) {
-      console.error('Error updating cart item notes:', error);
+    } catch (err) {
+      console.error('Failed to update notes:', err);
     }
   };
 
-  // Remove item from cart
+  // 7️⃣ Remove item
   const removeFromCart = async (itemId) => {
-    const itemToRemove = cart.find(item => item.id === itemId || item.productId === itemId);
-    
-    setCart(cart.filter(item => item.id !== itemId && item.productId !== itemId));
-    
+    const itemToRemove = cart.find(i => matchId(i, itemId));
+    setCart(cart.filter(item => !matchId(item, itemId)));
+
     try {
-      if (itemToRemove && itemToRemove.id) {
-        await axios.delete(`http://localhost:5000/cart/${itemToRemove.id}`);
+      if (itemToRemove?.id) {
+        await axios.delete(`http://localhost:3000/cart/${itemToRemove.id}`);
       }
-    } catch (error) {
-      console.error('Error removing cart item:', error);
+    } catch (err) {
+      console.error('Failed to remove item from API:', err);
     }
   };
 
-  // Clear cart
+  // 8️⃣ Clear all items
   const clearCart = async () => {
     try {
-      // Delete all items from API
       for (const item of cart) {
-        if (item.id) {
-          await axios.delete(`http://localhost:5000/cart/${item.id}`);
+        if (item?.id) {
+          await axios.delete(`http://localhost:3000/cart/${item.id}`);
         }
       }
-    } catch (error) {
-      console.error('Error clearing cart:', error);
+    } catch (err) {
+      console.error('Failed to clear cart from API:', err);
     }
-    
     setCart([]);
   };
 
-  // Calculate total price
-  const getTotalPrice = () => {
-    return cart.reduce((total, item) => total + (item.price * (item.quantity || 1)), 0);
-  };
+  // 9️⃣ Get total price
+  const getTotalPrice = () =>
+    cart.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
 
-  const contextValue = {
-    cart, 
-    addToCart, 
-    updateQuantity, 
-    removeFromCart, 
+  // ✅ Provide everything to the rest of app
+  const value = {
+    cart,
+    isLoading,
+    addToCart,
+    updateQuantity,
+    removeFromCart,
     clearCart,
     addNotes,
     getTotalPrice,
-    isLoading
   };
 
   return (
-    <CartContext.Provider value={contextValue}>
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );
 }
 
+// Hook to use in components
 export function useCart() {
   return useContext(CartContext);
-} 
+}
