@@ -4,7 +4,7 @@ const nextConfig = {
       return [
         {
           source: '/api/:path*',
-          destination: 'http://localhost:5000/:path*', // proxies to json-server
+          destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`, // proxies to json-server
         },
       ];
     },

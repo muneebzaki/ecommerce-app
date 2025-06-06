@@ -4,14 +4,16 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card, Button } from 'react-bootstrap';
 import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
+  const { showToast } = useToast();
   const [imgError, setImgError] = useState(false);
 
   const handleAddToCart = () => {
     addToCart(product, 1);
-    alert(`${product.title} added to cart.`);
+    showToast(`${product.title} added to cart.`);
   };
 
   return (

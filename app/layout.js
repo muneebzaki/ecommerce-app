@@ -6,6 +6,7 @@ import Script from "next/script";
 
 import Navbar from "./components/Navbar";
 import { CartProvider } from "./context/CartContext";
+import { ToastProvider } from "./context/ToastContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,12 +34,14 @@ export default function RootLayout({ children }) {
           crossOrigin="anonymous"
           strategy="beforeInteractive"
         />
-        <CartProvider>
-          <Navbar />
-          <main className="container mt-4">
-            {children}
-          </main>
-        </CartProvider>
+        <ToastProvider>
+          <CartProvider>
+            <Navbar />
+            <main className="container mt-4">
+              {children}
+            </main>
+          </CartProvider>
+        </ToastProvider>
       </body>
     </html>
   );

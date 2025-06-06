@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
-import axios from 'axios';
+import api from '../utils/api';
 
 export default function AddCampaignPage() {
   const router = useRouter();
@@ -43,7 +43,7 @@ export default function AddCampaignPage() {
     const newCampaign = { title, description, image: imageUrl, startDate, endDate };
 
     try {
-      await axios.post('http://localhost:5000/campaigns', newCampaign);
+      await api.post('/campaigns', newCampaign);
       setFeedback({ type: 'success', message: 'Campaign added successfully!' });
       setCampaign({ title: '', description: '', image: '', startDate: '', endDate: '' });
       setTimeout(() => router.push('/'), 2000);
