@@ -1,0 +1,117 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "title": "Powder Canister",
+      "description": "The Powder Canister is a finely milled setting powder designed to set makeup and control shine. With a lightweight and translucent formula, it provides a smooth and matte finish.",
+      "category": "beauty",
+      "price": 14.99,
+      "images": [
+        "https://cdn.dummyjson.com/product-images/beauty/powder-canister/1.webp"
+      ],
+      "thumbnail": "https://cdn.dummyjson.com/product-images/beauty/powder-canister/thumbnail.webp"
+    },
+    {
+      "id": 2,
+      "title": "Annibale Colombo Bed",
+      "description": "The Annibale Colombo Bed is a luxurious and elegant bed frame, crafted with high-quality materials for a comfortable and stylish bedroom.",
+      "category": "furniture",
+      "price": 1899.99,
+      "images": [
+        "https://cdn.dummyjson.com/product-images/furniture/annibale-colombo-bed/1.webp"
+      ],
+      "thumbnail": "https://cdn.dummyjson.com/product-images/furniture/annibale-colombo-bed/thumbnail.webp"
+    },
+    {
+      "id": 3,
+      "title": "Apple",
+      "description": "Fresh and crisp apples, perfect for snacking or incorporating into various recipes.",
+      "category": "groceries",
+      "price": 1.99,
+      "images": [
+        "https://cdn.dummyjson.com/product-images/groceries/apple/1.webp"
+      ],
+      "thumbnail": "https://cdn.dummyjson.com/product-images/groceries/apple/thumbnail.webp"
+    },
+    {
+      "id": 4,
+      "title": "Honey Jar",
+      "description": "Pure and natural honey in a convenient jar, perfect for sweetening beverages or drizzling over food.",
+      "category": "groceries",
+      "price": 6.99,
+      "images": [
+        "https://cdn.dummyjson.com/product-images/groceries/honey-jar/1.webp"
+      ],
+      "thumbnail": "https://cdn.dummyjson.com/product-images/groceries/honey-jar/thumbnail.webp"
+    },
+    {
+      "id": 5,
+      "title": "Chanel Coco Noir Eau De",
+      "description": "Coco Noir by Chanel is an elegant and mysterious fragrance, featuring notes of grapefruit, rose, and sandalwood. Perfect for evening occasions.",
+      "category": "fragrances",
+      "price": 129.99,
+      "images": [
+        "https://cdn.dummyjson.com/product-images/fragrances/chanel-coco-noir-eau-de/1.webp"
+      ],
+      "thumbnail": "https://cdn.dummyjson.com/product-images/fragrances/chanel-coco-noir-eau-de/thumbnail.webp"
+    },
+    {
+      "id": 6,
+      "title": "Dog Food",
+      "description": "Specially formulated dog food designed to provide essential nutrients for your canine companion.",
+      "category": "groceries",
+      "price": 10.99,
+      "images": [
+        "https://cdn.dummyjson.com/product-images/groceries/dog-food/1.webp"
+      ],
+      "thumbnail": "https://cdn.dummyjson.com/product-images/groceries/dog-food/thumbnail.webp"
+    },
+    {
+      "id": 7,
+      "title": "Red Nail Polish",
+      "description": "The Red Nail Polish offers a rich and glossy red hue for vibrant and polished nails. With a quick-drying formula, it provides a salon-quality finish at home.",
+      "category": "beauty",
+      "price": 8.99,
+      "images": [
+        "https://cdn.dummyjson.com/product-images/beauty/red-nail-polish/1.webp"
+      ],
+      "thumbnail": "https://cdn.dummyjson.com/product-images/beauty/red-nail-polish/thumbnail.webp"
+    },
+    {
+      "id": 8,
+      "title": "Bedside Table African Cherry",
+      "description": "The Bedside Table in African Cherry is a stylish and functional addition to your bedroom, providing convenient storage space and a touch of elegance.",
+      "category": "furniture",
+      "price": 299.99,
+      "images": [
+        "https://cdn.dummyjson.com/product-images/furniture/bedside-table-african-cherry/1.webp"
+      ],
+      "thumbnail": "https://cdn.dummyjson.com/product-images/furniture/bedside-table-african-cherry/thumbnail.webp"
+    },
+    {
+      "id": 9,
+      "title": "Juice",
+      "description": "Refreshing fruit juice, packed with vitamins and great for staying hydrated.",
+      "category": "groceries",
+      "price": 3.99,
+      "images": [
+        "https://cdn.dummyjson.com/product-images/groceries/juice/1.webp"
+      ],
+      "thumbnail": "https://cdn.dummyjson.com/product-images/groceries/juice/thumbnail.webp"
+    },
+    {
+      "id": 10,
+      "title": "Eyeshadow Palette with Mirror",
+      "description": "The Eyeshadow Palette with Mirror offers a versatile range of eyeshadow shades for creating stunning eye looks. With a built-in mirror, it's convenient for on-the-go makeup application.",
+      "category": "beauty",
+      "price": 19.99,
+      "images": [
+        "https://cdn.dummyjson.com/product-images/beauty/eyeshadow-palette-with-mirror/1.webp"
+      ],
+      "thumbnail": "https://cdn.dummyjson.com/product-images/beauty/eyeshadow-palette-with-mirror/thumbnail.webp"
+    }
+  ],
+  "cart": [],
+  "campaigns": [],
+  "reviews": []
+}
