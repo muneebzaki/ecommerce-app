@@ -3,12 +3,15 @@
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Button, Form, Card } from 'react-bootstrap';
 import { useCart } from '../../context/CartContext';
-import axios from 'axios';
+import api from '../../utils/api';
+import { useToast } from '../../context/ToastContext';
+import { averageRating } from '../../utils/ratings';
 import { useParams } from 'next/navigation';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const { addToCart } = useCart();
+  const { showToast } = useToast();
 
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -25,8 +28,8 @@ export default function ProductDetail() {
     const fetchProductData = async () => {
       try {
         const [productRes, reviewsRes] = await Promise.all([
-          axios.get(`http://localhost:5000/products/${id}`),
-          axios.get(`http://localhost:5000/reviews?productId=${id}`)
+          api.get(`/products/${id}`),
+          api.get(`/reviews`, { params: { productId: id } })
         ]);
         setProduct(productRes.data);
         setReviews(reviewsRes.data);
@@ -45,7 +48,7 @@ export default function ProductDetail() {
   const handleAddToCart = () => {
     if (product) {
       addToCart(product, 1);
-      alert(`✔️ ${product.title} added to cart`);
+      showToast(`✔️ ${product.title} added to cart`);
     }
   };
 
@@ -62,7 +65,7 @@ export default function ProductDetail() {
     const { author, comment, rating } = newReview;
 
     if (!author || !comment) {
-      alert('Please fill in your name and review.');
+      showToast('Please fill in your name and review.', 'danger');
       return;
     }
 
@@ -74,7 +77,7 @@ export default function ProductDetail() {
     };
 
     try {
-      const res = await axios.post('http://localhost:5000/reviews', reviewData);
+      const res = await api.post('/reviews', reviewData);
       setReviews(prev => [...prev, res.data]);
     } catch (err) {
       console.error('Failed to submit review:', err);
@@ -84,9 +87,7 @@ export default function ProductDetail() {
   };
 
   const getAverageRating = () => {
-    if (!reviews.length) return 0;
-    const total = reviews.reduce((sum, r) => sum + r.rating, 0);
-    return (total / reviews.length).toFixed(1);
+    return averageRating(reviews).toFixed(1);
   };
 
   const renderStars = (rating) => (

@@ -120,3 +120,17 @@ Add Review form
 
 🪪 License
 MIT License — Free to use and modify for educational purposes.
+
+## Environment Variables
+Create a `.env.local` file based on `.env.local.example` to configure the API URL:
+
+```
+cp .env.local.example .env.local
+```
+
+## Running Tests
+Install dependencies and run:
+
+```
+npm test
+```

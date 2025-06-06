@@ -1,10 +1,10 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 
 const CartContext = createContext();
-const API_URL = 'http://localhost:5000/cart';
+const API_URL = '/cart';
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
@@ -13,7 +13,7 @@ export function CartProvider({ children }) {
   useEffect(() => {
     const loadCart = async () => {
       try {
-        const response = await axios.get(API_URL);
+        const response = await api.get(API_URL);
         setCart(response.data);
       } catch (err) {
         console.error('Failed to load cart from API:', err);
@@ -27,7 +27,7 @@ export function CartProvider({ children }) {
   const syncItem = async (item) => {
     if (item?.id) {
       try {
-        await axios.put(`${API_URL}/${item.id}`, item);
+        await api.put(`${API_URL}/${item.id}`, item);
       } catch (err) {
         console.warn('Sync failed for item:', item, err);
       }
@@ -53,7 +53,7 @@ export function CartProvider({ children }) {
         notes
       };
       try {
-        const res = await axios.post(API_URL, newItem);
+        const res = await api.post(API_URL, newItem);
         setCart(prev => [...prev, res.data]);
       } catch {
         // fallback if API is offline
@@ -87,7 +87,7 @@ export function CartProvider({ children }) {
     setCart(prev => prev.filter(i => i.id !== id && i.productId !== id));
     if (item?.id) {
       try {
-        await axios.delete(`${API_URL}/${item.id}`);
+        await api.delete(`${API_URL}/${item.id}`);
       } catch (err) {
         console.warn('Delete failed:', item.id, err);
       }
@@ -98,7 +98,7 @@ export function CartProvider({ children }) {
     for (const item of cart) {
       if (item?.id) {
         try {
-          await axios.delete(`${API_URL}/${item.id}`);
+          await api.delete(`${API_URL}/${item.id}`);
         } catch (err) {
           console.warn('Failed to delete item during clearCart:', item.id, err);
         }

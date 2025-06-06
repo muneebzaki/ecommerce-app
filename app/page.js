@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Carousel } from 'react-bootstrap';
 import ProductCard from './components/ProductCard';
-import axios from 'axios';
+import api from './utils/api';
 
 export default function HomePage() {
   const [products, setProducts] = useState([]);
@@ -13,14 +13,13 @@ export default function HomePage() {
   const [sortOption, setSortOption] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const API = 'http://localhost:5000';
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [productRes, campaignRes] = await Promise.all([
-          axios.get(`${API}/products`),
-          axios.get(`${API}/campaigns`)
+          api.get('/products'),
+          api.get('/campaigns')
         ]);
         setProducts(productRes.data);
         setCampaigns(campaignRes.data);
